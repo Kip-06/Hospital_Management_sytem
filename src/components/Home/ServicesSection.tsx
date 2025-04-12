@@ -9,48 +9,73 @@ import {
   Star,
   BarChart
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../authentication context/aunthenticationContextPage';
 
 const ServicesSection = () => {
+  const { isAuthenticated, setRedirectPath } = useAuth();
+  const navigate = useNavigate();
+
+  // Handle protected route navigation
+  const navigateTo = (path: string): void => {
+    if (isAuthenticated) {
+      // User is authenticated, navigate directly to the path
+      navigate(path);
+    } else {
+      // User is not authenticated, store the path and redirect to sign in
+      setRedirectPath(path);
+      navigate('/signin');
+    }
+  };
+
   const services = [
     {
       icon: <Clipboard className="h-8 w-8" />,
       title: 'General Medicine',
-      description: 'Comprehensive health check-ups and primary care services for all ages.'
+      description: 'Comprehensive health check-ups and primary care services for all ages.',
+      path: '/patient/departments/general-medicine'
     },
     {
       icon: <Brain className="h-8 w-8" />,
       title: 'Neurology',
-      description: 'Expert care for neurological conditions with advanced treatment options.'
+      description: 'Expert care for neurological conditions with advanced treatment options.',
+      path: '/patient/departments/neurology'
     },
     {
       icon: <Heart className="h-8 w-8" />,
       title: 'Cardiology',
-      description: 'Specialized heart care with state-of-the-art diagnostic facilities.'
+      description: 'Specialized heart care with state-of-the-art diagnostic facilities.',
+      path: '/patient/departments/cardiology'
     },
     {
       icon: <Eye className="h-8 w-8" />,
       title: 'Ophthalmology',
-      description: 'Complete eye care services from routine check-ups to advanced surgeries.'
+      description: 'Complete eye care services from routine check-ups to advanced surgeries.',
+      path: '/patient/departments/ophthalmology'
     },
     {
       icon: <Activity className="h-8 w-8" />,
       title: 'Orthopedics',
-      description: 'Treatment for bone and joint conditions with modern techniques.'
+      description: 'Treatment for bone and joint conditions with modern techniques.',
+      path: '/patient/departments/orthopedics'
     },
     {
       icon: <Users className="h-8 w-8" />,
       title: 'Family Medicine',
-      description: 'Specialized healthcare services for the entire family.'
+      description: 'Specialized healthcare services for the entire family.',
+      path: '/patient/departments/family-medicine'
     },
     {
       icon: <Star className="h-8 w-8" />,
       title: 'Emergency Care',
-      description: 'Round-the-clock emergency medical services.'
+      description: 'Round-the-clock emergency medical services.',
+      path: '/patient/emergency'
     },
     {
       icon: <BarChart className="h-8 w-8" />,
       title: 'Laboratory',
-      description: 'Advanced diagnostic testing and laboratory services.'
+      description: 'Advanced diagnostic testing and laboratory services.',
+      path: '/patient/services/laboratory'
     }
   ];
 
@@ -71,7 +96,8 @@ const ServicesSection = () => {
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+              onClick={() => navigateTo(service.path)}
             >
               <div className="text-blue-600 mb-4">{service.icon}</div>
               <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
@@ -81,7 +107,10 @@ const ServicesSection = () => {
         </div>
 
         <div className="mt-12 text-center">
-          <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors">
+          <button 
+            className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors"
+            onClick={() => navigateTo('/services')}
+          >
             View All Services
           </button>
         </div>

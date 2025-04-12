@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Activity, 
   Brain, 
@@ -7,13 +8,36 @@ import {
   Star, 
   BarChart 
 } from 'lucide-react';
-import NavBar from '../Header/NavBar';
+import { useAuth } from '../authentication context/aunthenticationContextPage';
+import Navbar from '../Navbar/Navbar'; // Import the Navbar component
+import Footer from '../Footer/Footer'; // Optional: Import Footer component if you have one
 
+// Ensure SetCurrentPage prop is defined with the correct type
 interface ServicesPageProps {
   setCurrentPage: (page: string) => void;
 }
 
 const ServicesPage: React.FC<ServicesPageProps> = ({ setCurrentPage }) => {
+  const navigate = useNavigate();
+  const { isAuthenticated, setRedirectPath } = useAuth();
+
+  // Use useEffect to set current page when component mounts
+  useEffect(() => {
+    setCurrentPage('Services');
+  }, [setCurrentPage]);
+
+  const handleBookAppointment = () => {
+    // Check if user is authenticated
+    if (isAuthenticated) {
+      // If authenticated, navigate directly to appointments page
+      navigate('/patient/appointments?openForm=true');
+    } else {
+      // If not authenticated, save intended destination and redirect to sign-in
+      setRedirectPath('/patient/appointments?openForm=true');
+      navigate('/signin');
+    }
+  };
+
   const services = [
     {
       icon: <Activity className="h-12 w-12" />,
@@ -66,9 +90,11 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ setCurrentPage }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <NavBar currentPage="services" setCurrentPage={setCurrentPage} />
-      <main className="pt-16">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Add Navbar at the top of the page */}
+      <Navbar />
+      
+      <main className="flex-grow">
         {/* Hero Section */}
         <section className="bg-gradient-to-b from-blue-50 to-white py-16">
           <div className="container mx-auto px-4">
@@ -141,7 +167,7 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ setCurrentPage }) => {
             {/* Call to Action */}
             <div className="text-center mt-12">
               <button 
-                onClick={() => setCurrentPage('doctors')}
+                onClick={handleBookAppointment}
                 className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Book an Appointment
@@ -150,6 +176,9 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ setCurrentPage }) => {
           </div>
         </section>
       </main>
+      
+      {/* Add Footer at the bottom of the page */}
+      <Footer />
     </div>
   );
 };
